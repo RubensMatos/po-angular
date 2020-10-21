@@ -170,6 +170,36 @@ describe('PoTableColumnManagerComponent:', () => {
       expect(component.visibleColumnsChange.emit).toHaveBeenCalledWith(visibleColumnsChange);
     });
 
+    it(`onChangeVisibleColumns: should set 'selectedColumns'`, () => {
+      const checkedColumns = ['initial'];
+
+      component.onChangeVisibleColumns(checkedColumns);
+
+      expect(component['selectedColumns']).toEqual(checkedColumns);
+    });
+
+    it(`emitVisibleColumns: should call 'changeVisibleColumns.emit' if 'selectedColumns' is
+    different from 'previouslySelectedColumns'`, () => {
+      spyOn(component.changeVisibleColumns, 'emit');
+      component['selectedColumns'] = ['initial'];
+      component['previouslySelectedColumns'] = ['name'];
+
+      component.emitVisibleColumns();
+
+      expect(component.changeVisibleColumns.emit).toHaveBeenCalledWith(component['selectedColumns']);
+    });
+
+    it(`emitVisibleColumns: shouldn't call 'changeVisibleColumns.emit' if 'selectedColumns' is
+    equals 'previouslySelectedColumns'`, () => {
+      spyOn(component.changeVisibleColumns, 'emit');
+      component['selectedColumns'] = ['initial'];
+      component['previouslySelectedColumns'] = ['initial'];
+
+      component.emitVisibleColumns();
+
+      expect(component.changeVisibleColumns.emit).not.toHaveBeenCalledWith(component['selectedColumns']);
+    });
+
     it('restore: should call `updateColumnsOptions` with `defaultColumns`', () => {
       spyOn(component, <any>'updateColumnsOptions');
 

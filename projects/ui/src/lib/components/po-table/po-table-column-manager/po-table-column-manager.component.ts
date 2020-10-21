@@ -53,6 +53,8 @@ export class PoTableColumnManagerComponent implements OnInit, OnChanges, OnDestr
   visibleColumns: Array<string> = [];
 
   private defaultColumns: Array<PoTableColumn> = [];
+  private previouslySelectedColumns: Array<string>;
+  private selectedColumns: Array<string>;
   private resizeListener: () => void;
 
   @Input('p-columns') columns: Array<PoTableColumn> = [];
@@ -68,6 +70,8 @@ export class PoTableColumnManagerComponent implements OnInit, OnChanges, OnDestr
   @Input('p-target') target: ElementRef;
 
   @Output('p-visible-columns-change') visibleColumnsChange = new EventEmitter<Array<PoTableColumn>>();
+
+  @Output('p-change-visible-columns') changeVisibleColumns = new EventEmitter<Array<string>>();
 
   @ViewChild(PoPopoverComponent) popover: PoPopoverComponent;
 
@@ -105,11 +109,22 @@ export class PoTableColumnManagerComponent implements OnInit, OnChanges, OnDestr
   }
 
   onChangeVisibleColumns(checkedColumns: Array<string>) {
+    this.selectedColumns = checkedColumns;
     this.disableColumnsOptions(this.columnsOptions);
 
     const visibleTableColumns = this.getVisibleTableColumns(checkedColumns);
 
     this.visibleColumnsChange.emit(visibleTableColumns);
+  }
+
+  emitVisibleColumns() {
+    if (
+      this.selectedColumns &&
+      JSON.stringify(this.selectedColumns) !== JSON.stringify(this.previouslySelectedColumns)
+    ) {
+      this.previouslySelectedColumns = [...this.selectedColumns];
+      this.changeVisibleColumns.emit(this.selectedColumns);
+    }
   }
 
   restore() {
